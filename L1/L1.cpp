@@ -4,8 +4,7 @@ using namespace std;
 
 // 3级就绪队列的时间片
 int time_slice[4]{0, 1, 2, 3};
-// 标记上次次运行的进程
-PCB* last_run = nullptr;
+
 
 
 // PCB
@@ -21,16 +20,20 @@ struct PCB{
     struct PCB* link;   // 下一个pcb
 };
 
-PCB* createPCB(int n); // 随机生成10个进程的就绪队列,不含头节点
-void super_sort(PCB* head); // 优先级排序, 从大到小
-void show(PCB* head);  // 打印就绪队列
-void show_run(PCB* head);   // 打印当前运行的进程
-int space(PCB* head);  // 就绪队列长度
-PCB* destroy(PCB* head, PCB* p);   // 进程撤销，返回撤销后的就绪队列
-void HPS(PCB* head);   // 最高优先数优先调度算法
-void RR(PCB* head);   // 时间片轮转调度算法
-PCB* head_to_tail(PCB* head);  //将头节点放到就绪队列尾部，返回新的头节点
 
+
+// 标记上次次运行的进程
+PCB* last_run = nullptr;
+
+PCB *createPCB(int n);           // 随机生成10个进程的就绪队列,不含头节点
+void super_sort(PCB *head);      // 优先级排序, 从大到小
+void show(PCB *head);            // 打印就绪队列
+void show_run(PCB *head);        // 打印当前运行的进程
+int space(PCB *head);            // 就绪队列长度
+PCB *destroy(PCB *head, PCB *p); // 进程撤销，返回撤销后的就绪队列
+void HPS(PCB *head);             // 最高优先数优先调度算法
+void RR(PCB *head);              // 时间片轮转调度算法
+PCB *head_to_tail(PCB *head);    // 将头节点放到就绪队列尾部，返回新的头节点
 
 // 手动创建一个进程
 PCB* createPCB(){
@@ -220,11 +223,29 @@ PCB* tail_to_tail(PCB* head, PCB* p){
     }
     q->link = p;
     p->link = nullptr;
+
     return head;
 }
 
 // 多级反馈队列调度算法
 void MFQ(PCB* Q[]){
+
+    // 是否被抢占
+    if(last_run != nullptr){
+        // 上次运行的进程是否运行完毕
+        if(last_run->acc_time < time_slice[last_run->Q_level]){
+            // 更高级的队列为空，没被抢占，继续优先运行
+            if(last_run->Q_level > 1 && Q[last_run->Q_level-1] == nullptr){
+
+            }
+            // 被抢占，重新回到当前队列等待
+            else{
+
+            }
+
+        }
+    }
+
     // Q[1] 是否有进程
     if(Q[1] != nullptr){
         // 取出优先级最高的进程
@@ -311,7 +332,7 @@ int main(){
     cout << "--- 操作系统实验1 ---" << endl;
     cout << "1. 最高优先数优先调度算法" << endl;
     cout << "2. 时间片轮转调度算法" << endl;
-    cout << "3. 多级反馈队列调度算法,抢占式" << endl;
+    //cout << "3. 多级反馈队列调度算法,抢占式" << endl;
     cout << "---------------------" << endl;
 
     cout << "请选择调度算法：" << endl;
@@ -451,7 +472,6 @@ int main(){
                 getchar();
 
 
-                
 
             }
     
